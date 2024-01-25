@@ -1,0 +1,1 @@
+[SHUTDOWN] date: 12.01.24 14:01 file: /app/eBot-CSGO/src/eBot/Application/Application.php | ln: 319 | msg: mysqli_connect(): (HY000/2002): Connection refused

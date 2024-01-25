@@ -1,0 +1,84 @@
+version: '3'
+services:
+    ebot-web:
+        build:
+            context: ./ebot-web
+        environment:
+            - EBOT_ADMIN_LOGIN=admin
+            - EBOT_ADMIN_PASSWORD=password
+            - EBOT_ADMIN_EMAIL=admin@example.com
+        volumes:
+            - "eBotWebVolume:/app/eBot-CSGO-Web"
+            - "./ebot-logs:/app/ebot-logs"
+            - "./ebot-demos:/app/ebot-demos"
+            - "./etc/eBotWeb/app.yml:/app/eBot-CSGO-Web/config/app.yml"
+            - "./etc/eBotWeb/app_user.yml:/app/eBot-CSGO-Web/config/app_user.yml"
+            - "./etc/eBotWeb/databases.yml:/app/eBot-CSGO-Web/config/databases.yml"
+        depends_on:
+            - mysqldb
+        links:
+            - cs2-server0
+
+    ebot-socket:
+        build:
+            context: ./ebot-socket
+        ports:
+            - "12360:12360"
+        volumes:
+            - "./ebot-logs:/app/eBot-CSGO/logs"
+            - "./ebot-demos:/app/eBot-CSGO/demos"
+            - "./etc/eBotSocket/config.ini:/app/eBot-CSGO/config/config.ini"
+        depends_on:
+            mysqldb:
+                condition: service_healthy
+    ebot-logs-receiver:
+        build:
+            context: ./ebot-logs-receiver
+        ports:
+            - "12345:12345"
+        volumes:
+            - "./etc/eBotLogReceiver/config.json:/app/ebot-project/configs/config.json"
+        depends_on:
+            - redis
+    mysqldb:
+        image: biarms/mysql:5.7
+        restart: always
+        environment:
+            - MYSQL_DATABASE
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+        volumes:
+            - "./data/db/mysql:/var/lib/mysql"
+        expose:
+            - "3306"
+        ports:
+            - "3306:3306"
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            timeout: 5s
+            retries: 10
+    redis:
+        image: redis:alpine
+        restart: always
+        volumes:
+            - ./data/redis:/data
+    nginx:
+        image: nginx:alpine
+        volumes:
+            - "./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf"
+            - "eBotWebVolume:/app/eBot-CSGO-Web"
+        ports:
+            - "80:80"
+            - "443:443"
+        restart: always
+        depends_on:
+            - ebot-web
+            - mysqldb
+
+volumes:
+    eBotWebVolume:
+
+networks:
+    default:
+        name: ebot-network

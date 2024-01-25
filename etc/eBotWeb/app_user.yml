@@ -1,0 +1,36 @@
+# ----------------------------------------------------------------------
+# white space are VERY important, don't remove it or it will not work
+# ----------------------------------------------------------------------
+
+  log_match: /app/ebot-logs/log_match
+  log_match_admin: /app/ebot-logs/log_match_admin
+  demo_path: /app/ebot-demos
+
+  default_max_round: 12
+  default_rules: esl5on5
+  default_overtime_max_round: 3
+  default_overtime_startmoney: 16000
+
+  # true or false, whether demos will be downloaded by the ebot server
+  # the demos can be downloaded at the matchpage, if it's true
+
+  demo_download: true
+
+  ebot_ip: 127.0.0.1
+  ebot_port: 12360
+
+  # lan or net, it's to display the server IP or the GO TV IP
+  # net mode display only started match on home page
+  mode: lan
+
+  # set to 0 if you don't want a refresh
+  refresh_time: 30
+
+  # Toornament Configuration
+  toornament_id:
+  toornament_secret:
+  toornament_api_key:
+  toornament_plugin_key: test-123457890
+
+  # Same as eBot config
+  websocket_secret_key: 8cd090e8bdef7fca3c85df613cfbb81a
